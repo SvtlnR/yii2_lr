@@ -28,7 +28,7 @@ modules:
 #            - mail/*
 #    blacklist:
 #        include:
-#            - assets/*
+#            - public/*
 #            - config/*
 #            - runtime/*
 #            - vendor/*
