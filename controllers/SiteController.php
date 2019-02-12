@@ -13,6 +13,7 @@ use app\models\ContactForm;
 use app\models\EntryForm;
 use app\models\Article;
 use yii\data\Pagination;
+use app\models\Category;
 
 class SiteController extends Controller
 {
@@ -65,18 +66,21 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $query=Article::find();
-        $count=$query->count();
-        $pagination= new Pagination(['totalCount'=>$count,'pageSize'=>1]);
-        $articles=$query->offset($pagination->offset)
-            ->limit($pagination->limit)
-            ->all();
 
+        $data=Article::getAll(1);
 
+        $popular=Article::getPopular();
+
+        $recent=Article::getRecent();
+
+        $categories=Category::getAll();
         return $this->render('index',
             [
-                'articles'=>$articles,
-                'pagination'=>$pagination
+                'articles'=>$data['articles'],
+                'pagination'=>$data['pagination'],
+                'popular' =>$popular,
+                'recent' =>$recent,
+                'categories' =>$categories
             ]);
     }
 
@@ -158,12 +162,38 @@ class SiteController extends Controller
         }
     }
 
-    public function actionView(){
-        return $this->render('single');
+    public function actionView($id){
+
+        $article=Article::findOne($id);
+
+        $popular=Article::getPopular();
+
+        $recent=Article::getRecent();
+
+        $categories=Category::getAll();
+
+        return $this->render('single',[
+            'article'=>$article,
+            'popular' =>$popular,
+            'recent' =>$recent,
+            'categories' =>$categories
+        ]);
     }
 
-    public function actionCategory(){
-        return $this->render('category');
+    public function actionCategory($id){
+
+        $data=Category::getArticlesByCategory($id);
+        $popular=Article::getPopular();
+        $recent=Article::getRecent();
+        $categories=Category::getAll();
+
+        return $this->render('category',[
+            'articles'  =>  $data['articles'],
+            'pagination'=>  $data['pagination'],
+            'popular'   => $popular,
+            'recent'   => $recent,
+            'categories'   => $categories
+        ]);
     }
 
 }
