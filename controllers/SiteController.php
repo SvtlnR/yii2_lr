@@ -14,6 +14,7 @@ use app\models\EntryForm;
 use app\models\Article;
 use yii\data\Pagination;
 use app\models\Category;
+use app\models\CommentForm;
 
 class SiteController extends Controller
 {
@@ -139,11 +140,19 @@ class SiteController extends Controller
 
         $categories=Category::getAll();
 
+        $comments=$article->getArticleComments();
+
+        $commentForm=new CommentForm();
+
+        $article->viewedCounter();
+
         return $this->render('single',[
             'article'=>$article,
             'popular' =>$popular,
             'recent' =>$recent,
-            'categories' =>$categories
+            'categories' =>$categories,
+            'comments'  => $comments,
+            'commentForm'   => $commentForm
         ]);
     }
 
@@ -161,6 +170,17 @@ class SiteController extends Controller
             'recent'   => $recent,
             'categories'   => $categories
         ]);
+    }
+
+    public function actionComment($id){
+        $model=new CommentForm();
+        if(Yii::$app->request->isPost){
+            $model->load(Yii::$app->request->post());
+            if($model->saveComment($id)){
+                Yii::$app->getSession()->setFlash('comment','Your comment will be added soon!');
+                return $this->redirect(['site/view','id'=>$id]);
+            }
+        }
     }
 
 }

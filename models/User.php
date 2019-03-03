@@ -96,4 +96,11 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function create(){
         return $this->save(false);
     }
+
+    public function getImage(){
+        if($this->photo){
+            return $this->photo;
+        }
+        return '/no-photo.png';
+    }
 }
